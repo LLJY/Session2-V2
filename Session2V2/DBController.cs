@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using System.Threading.Tasks;
 
 namespace Session2V2
@@ -136,6 +137,7 @@ namespace Session2V2
                              select p.Name).ToList();
                 info.EMID = emID;
                 info.AssetID = (int)query.AssetID;
+                info.AssetSN = query.Asset.AssetSN;
                 info.AssetName = query.Asset.AssetName;
                 info.Department = query.Asset.DepartmentLocation.Department.Name;
                 info.EndDate = query.EMEndDate;
@@ -155,6 +157,29 @@ namespace Session2V2
                 query.EMStartDate = info.StartDate;
                 query.EMEndDate = info.EndDate;
                 query.EMTechnicianNote = info.TechnicianNote;
+                foreach (var item in info.AddedParts)
+                {
+                    bool beforeExpire = await warningParts(item.PartName, info.AssetID);
+                    //pass by default
+                    DialogResult result = DialogResult.OK;
+                    if (beforeExpire)
+                    {
+                        result = MessageBox.Show($"Are you sure you want to replace { item.PartName} before the end of its effective life?", "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    }
+                    if (result == DialogResult.OK)
+                    {
+                        var addpart = (await getPartfromName(item.PartName)).ID;
+                        var cpid = (from c in db.ChangedParts
+                                    orderby c.ID descending
+                                    select c.ID).First() + 1;
+                        ChangedPart cp = new ChangedPart();
+                        cp.EmergencyMaintenanceID = info.EMID;
+                        cp.PartID = addpart;
+                        cp.Amount = item.Amount;
+                        cp.ID = cpid;
+                        db.ChangedParts.Add(cp);
+                    }
+                }
                 await db.SaveChangesAsync();
             }
         }
@@ -166,6 +191,31 @@ namespace Session2V2
                             where p.Name == partname
                             select p).FirstOrDefault();
                 return part;
+            }
+        }
+        public static async Task<bool> warningParts(string partname, int assetID)
+        {
+            using (var db = new Session2Entities())
+            {
+                List<Part> returnlist = new List<Part>();
+                try
+                {
+                    var h = (from e in db.EmergencyMaintenances
+                             where e.AssetID == assetID
+                             select e).First();
+                    var p = (from part in h.ChangedParts
+                             where part.Part.Name == partname
+                             select part).First();
+                    if (h.EMStartDate - DateTime.Now < TimeSpan.FromDays((double)p.Part.EffectiveLife))
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+                return false;
             }
         }
     }

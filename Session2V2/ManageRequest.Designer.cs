@@ -51,6 +51,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.remove_button = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -213,6 +214,7 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.remove_button);
             this.groupBox3.Controls.Add(this.amount_updown);
             this.groupBox3.Controls.Add(this.parts_combo);
             this.groupBox3.Controls.Add(this.parts_dgv);
@@ -228,6 +230,7 @@
             // 
             // amount_updown
             // 
+            this.amount_updown.DecimalPlaces = 2;
             this.amount_updown.Location = new System.Drawing.Point(360, 10);
             this.amount_updown.Name = "amount_updown";
             this.amount_updown.Size = new System.Drawing.Size(120, 20);
@@ -243,6 +246,7 @@
             // 
             // parts_dgv
             // 
+            this.parts_dgv.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.parts_dgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.parts_dgv.Location = new System.Drawing.Point(0, 39);
             this.parts_dgv.Name = "parts_dgv";
@@ -276,6 +280,16 @@
             this.label7.Size = new System.Drawing.Size(60, 13);
             this.label7.TabIndex = 3;
             this.label7.Text = "Part Name:";
+            // 
+            // remove_button
+            // 
+            this.remove_button.Location = new System.Drawing.Point(530, 10);
+            this.remove_button.Name = "remove_button";
+            this.remove_button.Size = new System.Drawing.Size(117, 24);
+            this.remove_button.TabIndex = 13;
+            this.remove_button.Text = "Remove Item";
+            this.remove_button.UseVisualStyleBackColor = true;
+            this.remove_button.Click += new System.EventHandler(this.Remove_button_Click);
             // 
             // ManageRequest
             // 
@@ -326,5 +340,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NumericUpDown amount_updown;
         private System.Windows.Forms.ComboBox parts_combo;
+        private System.Windows.Forms.Button remove_button;
     }
 }

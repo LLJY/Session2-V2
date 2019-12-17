@@ -13,6 +13,7 @@ namespace Session2V2
     public partial class LoginForm : Form
     {
         List<Employee> Employees;
+        bool Debug = true;
         public LoginForm()
         {
             Initialize();
@@ -22,15 +23,27 @@ namespace Session2V2
             var dbTask = DBController.GetEmployees();
             InitializeComponent();
             Employees = await dbTask;
+            if (!Debug)
+            {
+                josfa.Visible = false;
+                lyn.Visible = false;
+            }
         }
         public async Task<Employee> checkLogin(string username, string password)
         {
             //this function returns employee if login is valid
             //returns null otherwise
-            return (from e in Employees
-                    where e.Username == username
-                    where e.Password == password
-                    select e).First();
+            try
+            {
+                return (from e in Employees
+                        where e.Username == username
+                        where e.Password == password
+                        select e).First();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
         private async void Login_button_Click(object sender, EventArgs e)
         {

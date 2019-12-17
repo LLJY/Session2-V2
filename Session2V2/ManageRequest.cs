@@ -21,7 +21,7 @@ namespace Session2V2
             EmergencyInfoID = emID;
             Initialize();
         }
-        public async void Initialize()
+        private async void Initialize()
         {
             var dbTask = DBController.getEMInfo(EmergencyInfoID);
             InitializeComponent();
@@ -52,7 +52,6 @@ namespace Session2V2
             CurrentInfo.EndDate = EndDatePicker.Value;
             CurrentInfo.TechnicianNote = tech_note_richbox.Text;
             await DBController.updateEMData(CurrentInfo);
-            //CurrentInfo.listOfParts = parts_combo.DataSource;
             Back_button_Click(sender, e);
         }
 
@@ -73,10 +72,27 @@ namespace Session2V2
                 part.PartName = parts_combo.SelectedItem.ToString();
                 part.Amount = (int)amount_updown.Value;
                 CurrentInfo.AddedParts.Add(part);
-                parts_dgv.DataSource = null;
-                parts_dgv.DataSource = CurrentInfo.AddedParts;
-                parts_dgv.Refresh();
+                refreshDGV();
             }
+        }
+
+        private void Remove_button_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //will error out if empty, just try catch because laziness
+                CurrentInfo.AddedParts.Remove(CurrentInfo.AddedParts[parts_dgv.CurrentCell.RowIndex]);
+            }catch (Exception)
+            {
+
+            }
+            refreshDGV();
+        }
+        private void refreshDGV()
+        {
+            parts_dgv.DataSource = null;
+            parts_dgv.DataSource = CurrentInfo.AddedParts;
+            parts_dgv.Columns[0].HeaderText = "Part Name";
         }
     }
     public class ManageRequestInfo
